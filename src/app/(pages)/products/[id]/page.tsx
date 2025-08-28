@@ -11,6 +11,7 @@ import Link from "next/link";
 import { renderStars } from "@/helpers/rating";
 import { formatPrice } from "@/helpers/currency";
 import { SingleProductResponse } from "@/types";
+import { servicesApi } from "@/services/api";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -21,9 +22,9 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(-1);
 
   async function fetchProductDetails() {
-    const response: SingleProductResponse = await fetch(
-      "https://ecommerce.routemisr.com/api/v1/products/" + id
-    ).then((res) => res.json());
+    const response: SingleProductResponse = await servicesApi.getProductDetails(
+      String(id!)
+    );
     setProduct(response.data);
     setLoading(false);
   }

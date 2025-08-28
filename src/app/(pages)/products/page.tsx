@@ -7,6 +7,7 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, Grid, List } from "lucide-react";
 import { ProductsResponse } from "@/types";
+import { servicesApi } from "@/services/api";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -17,9 +18,7 @@ export default function ProductsPage() {
   async function fetchProducts() {
     try {
       setLoading(true);
-      const response: ProductsResponse = await fetch(
-        "https://ecommerce.routemisr.com/api/v1/products"
-      ).then((res) => res.json());
+      const response: ProductsResponse = await servicesApi.getAllProducts()
       setProducts(response.data);
     } catch (error: any) {
       setError(error.message);

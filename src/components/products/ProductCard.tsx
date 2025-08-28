@@ -4,9 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/interfaces";
 import { Button } from "@/components/ui/button";
-import { Star, ShoppingCart, Heart } from "lucide-react";
+import { Star, ShoppingCart, Heart, Loader2 } from "lucide-react";
 import { renderStars } from "@/helpers/rating";
 import { formatPrice } from "@/helpers/currency";
+import { servicesApi } from "@/services/api";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface ProductCardProps {
   product: Product;
@@ -14,6 +17,19 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
+  const [isAddToCartLoading, setIsAddToCartLoading] = useState(false);
+
+  async function handleAddToCart() {
+    setIsAddToCartLoading(true);
+    const response = await servicesApi.addProductToCart(product._id);
+    console.log(response);
+    setIsAddToCartLoading(false);
+    toast.success(response.message, {
+      position: 'top-right',
+      icon: '✅'
+    });
+  }
+
   if (viewMode === "list") {
     return (
       <div className="flex gap-4 p-4 border rounded-lg hover:shadow-md transition-shadow">
@@ -171,7 +187,13 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
         </div>
 
         {/* Add to Cart Button */}
-        <Button className="w-full" size="sm">
+        <Button
+          disabled={isAddToCartLoading || product.quantity == 0}
+          onClick={handleAddToCart}
+          className="w-full"
+          size="sm"
+        >
+          {isAddToCartLoading && <Loader2 className="animate-spin" />}
           <ShoppingCart className="h-4 w-4 mr-2" />
           Add to Cart
         </Button>
